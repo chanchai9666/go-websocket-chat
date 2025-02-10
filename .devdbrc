@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "/Users/chanchai/Code/Go/Lab/websocket_chat/chat.db"
+  }
+]

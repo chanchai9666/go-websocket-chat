@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Private Chat</title>
+</head>
+<body>
+    <h2>Private Chat</h2>
+    <input type="text" id="user_id" placeholder="Your ID">
+    <button onclick="connect()">Connect</button>
+    <br><br>
+    <input type="text" id="receiver_id" placeholder="Receiver ID">
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <h3>Messages:</h3>
+    <div id="chat"></div>
+
+    <script>
+        let ws;
+
+        function connect() {
+            let userId = document.getElementById("user_id").value;
+            if (!userId) {
+                alert("Please enter your ID");
+                return;
+            }
+
+            ws = new WebSocket("ws://localhost:3000/ws/chat/" + userId);
+
+            ws.onmessage = function(event) {
+                let chat = document.getElementById("chat");
+                let message = document.createElement("p");
+                message.textContent = event.data;
+                chat.appendChild(message);
+            };
+
+            ws.onopen = function() {
+                alert("Connected as " + userId);
+            };
+        }
+
+        function sendMessage() {
+            let receiverId = document.getElementById("receiver_id").value;
+            let messageText = document.getElementById("message").value;
+
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert("Please connect first");
+                return;
+            }
+
+            let message = {
+                sender_id: document.getElementById("user_id").value,
+                receiver_id: receiverId,
+                text: messageText
+            };
+
+            ws.send(JSON.stringify(message));
+            document.getElementById("message").value = "";
+        }
+    </script>
+</body>
+</html>
